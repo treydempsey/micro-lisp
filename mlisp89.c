@@ -36,7 +36,7 @@ int is_op(char x) { return x == '-' || x == '+' || x == '*' || x == '/'
    || x == '=' || x == '%' || x == '^' || x == '&' || x == '|' || x == '!'
      ; }
 
-int freadmem(void *cookie, char *buf, int size) {  /* funopen enables parsing of memory as well as files */
+ssize_t freadmem(void *cookie, char *buf, size_t size) {  /* funopen enables parsing of memory as well as files */
   char **position = (char **) cookie,   *mem = * (char **) position;
   int num_read = 0;
   for( ; num_read < size && *mem != '\0'; num_read++)
@@ -505,7 +505,13 @@ static const char * env_src[][2]  = {
 };
 
 Object *eval_string(const char *str, Object *env) {
-  Object *port = newport( funopen(&str, freadmem, NULL, NULL, NULL) );
+  Object *port;
+  cookie_io_functions_t iof;
+  iof.read = freadmem;
+  iof.write = NULL;
+  iof.seek = NULL;
+  iof.close = NULL;
+  port = newport( fopencookie(&str, "r", iof) );
   lookahead(port);
   return eval(gettokenobj(port), env);
 }

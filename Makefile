@@ -9,7 +9,7 @@ micro-lisp: micro-lisp.c
 	$(CC) $(CFLAGS) -o $@ $^
 
 mlisp89: mlisp89.c
-	$(CC) $(CFLAGS) -ansi -std=c89 -D_DEFAULT_SOURCE -o $@ $^
+	$(CC) $(CFLAGS) -ansi -std=c89 -D_DEFAULT_SOURCE -D_GNU_SOURCE -o $@ $^
 
 stats: mlisp89.c
 	wc $^
